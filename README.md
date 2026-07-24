@@ -17,15 +17,16 @@ Este repositorio contrasta dos paradigmas fundamentales del procesamiento de sec
 2. **Modelo de Atención (Transformer Causal - GPT style):** Basado en máscaras causales triangulares y procesamiento paralelo de ventanas de contexto.
 
 ---
-
 ## 📊 Comparativa de Rendimiento Empírico
 
-El experimento se evaluó sobre un conjunto de pruebas de **100 melodías independientes** generadas mediante muestreo multinomial con temperatura controlada ($T=0.8$). La gramaticalidad se verificó de forma automatizada y silenciosa utilizando el motor de análisis de `music21`.
+Ambos modelos se entrenaron con el mismo `context_window=100`, el mismo vocabulario a nivel de carácter (83 símbolos) y el mismo split train/val (90/10), para garantizar una comparación justa. El entrenamiento usó AdamW con *learning rate scheduling* (warmup + decaimiento coseno).
 
-| Modelo | # Parámetros | Train Loss | Val Loss | Perplejidad (PPL) | Tiempo/Época (H200) | Tasa de Validez Sintáctica |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LSTM Baseline** | *[Ver Notebook]* | *[Ver Notebook]* | *[Ver Notebook]* | *[Ver Notebook]* | **~226.5 s** | **[Ver Notebook]%** |
-| **Transformer Causal** | *[Ver Notebook]* | *[Ver Notebook]* | *[Ver Notebook]* | *[Ver Notebook]* | **~55.4 s** | **[Ver Notebook]%** |
+| Modelo | # Parámetros | Épocas | Train Loss | Val Loss | Perplejidad (PPL) | Tiempo/Época (H200) | Tiempo Total |
+| ------ | ------------- | ------ | ----------- | -------- | ------------------ | -------------------- | ------------- |
+| **LSTM Baseline** | 953,555 | 40 | 0.4074 | **0.3354** | **1.40** | ~226.5 s | ~2h 31min |
+| **Transformer Causal** | 827,475 | 50 | 0.6346 | 0.5508 | 1.73 | **~55.4 s** | **~46 min** |
+
+> El LSTM obtuvo mejor pérdida y perplejidad final, pero el Transformer entrenó **~4x más rápido** por época gracias a la paralelización de la self-attention frente al procesamiento secuencial del LSTM. La validación sintáctica de las secuencias generadas se realizó mediante `music21`, anteponiendo un header ABC sintético (ver sección de decisiones metodológicas) ya que el dataset original carece de metadatos `X:`/`T:`/`K:`.
 
 > *Nota: El Transformer demuestra una velocidad de entrenamiento significativamente superior (~4x más rápido por época) gracias a la paralelización matricial en los Tensor Cores de la GPU NVIDIA H200, superando el cuello de botella secuencial de la memoria LSTM.*
 
