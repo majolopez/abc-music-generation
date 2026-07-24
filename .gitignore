@@ -1,0 +1,22 @@
+# Entornos y temporales de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+env/
+
+# Jupyter / Colab
+.ipynb_checkpoints/
+*.empty
+
+# Pesos de Modelos (opcional: puedes comentar esto si tus .pt pesan menos de 50MB y quieres compartirlos)
+checkpoints/*.pt
+*.pth
+*.onx
+
+# Archivos de audio generados durante pruebas
+*.mid
+*.midi
+*.wav
+*.mp3
